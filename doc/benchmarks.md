@@ -75,7 +75,7 @@ static void BM_stack_random_back_pop(benchmark::State &state) {
 если мы разделим общее время выполнения измерения на количество добавленных элементов, то получим примерное время добавления одного элемента `push`:
 ![alt text](../resources/benchmark_1_2.png)
 
-Для каждой структуры: vector, stack, standard_stack (из ./standard_)
+Для каждой структуры: vector, stack, standard_stack (из [standard_solution.hpp](../tests/standard_solution.hpp))
 ![alt text](../resources/benchmark_1_3.png)
 ![alt text](../resources/benchmark_1_4.png)
 ![alt text](../resources/benchmark_1_5.png)
