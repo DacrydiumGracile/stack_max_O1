@@ -1,0 +1,39 @@
+В один из вечеров, когда я читал различные статьи на Хабре, я наткнулся на размышления о задаче ["стек с поиском максимума"](https://habr.com/ru/articles/843596/) от [Ивана Бессонова](https://habr.com/ru/users/ibessonov/). Автор рассматривает проблемы, которые имеют "стандартные" решения в сети. А также задаётся вопросом, как избежать проблем с переполнением и суметь решить поставленную задачу, не вводя дополнительные ограничения на данные, которые мы добавляем в стек. В этом небольшой черновике я приведу одно из возможных решений, которое основывается на модификации одного из вариантов решений из статьи автора.  
+
+### Различные части проекта
+
+1. [Поиск решения и математические выкладки](doc/info.md)
+2. [Ряд пояснений по коду](doc/code.md)
+    - файл с реализацией [solvers/solver_1/solution.cpp](solvers/solver_1/solution.cpp)
+3. [Описание процедуры проверки корректности](doc/tests.md)
+    - [tests/user_tests.cpp](tests/user_tests.cpp)
+4. [Дополнительная информация о benchmarks](doc/benchmarks.md)
+
+### Сборба проекта
+
+Для сборки проекта потребуется: [cmake](https://cmake.org/), [googletest](https://github.com/google/googletest) и [google/benchmark](https://github.com/google/benchmark).
+
+```bash
+$ cmake -S . -B ./build -DCMAKE_BUILD_TYPE=Release
+$ cmake --build ./build
+```
+
+Запуск тестов
+```bash
+$ ctest -V --test-dir ./build/tests/
+или
+$ ./build/tests/user_test
+```
+
+Запуск замеров
+```bash
+$ ./build/benchmarks/benchmark_1 --benchmark_enable_random_interleaving=true  --benchmark_repetitions=25 > ./results/benchmark_1.txt 2>&1
+
+$ ./build/benchmarks/benchmark_2 --benchmark_enable_random_interleaving=true --benchmark_repetitions=25  > ./results/benchmark_2.txt 2>&1
+
+$ ./build/benchmarks/benchmark_3 --benchmark_enable_random_interleaving=true --benchmark_repetitions=10  > ./results/benchmark_3.txt 2>&1
+```
+или
+```bash
+$ ./run_benchmark.sh
+```

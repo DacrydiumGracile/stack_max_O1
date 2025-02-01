@@ -1,0 +1,6 @@
+#ifndef CONFIG_HPP
+#define CONFIG_HPP
+
+#define TEST_DATA_DIR "@TEST_DATA_DIR@"
+
+#endif // CONFIG_HPP
