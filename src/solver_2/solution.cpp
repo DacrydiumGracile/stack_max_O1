@@ -1,19 +1,33 @@
 #include "solution.hpp"
+#include <bit>
 
-size_t log2(size_t x) {
+elem_t log2(elem_t x) {
   [[assume(x != 0)]];
   return std::bit_width(x) - 1; // bit_width вернёт int
 }
 
-Stack::Stack(size_t B_, size_t length_)
+Stack::Stack(elem_t B_)
     : B{B_},
-      // Максимальное число для нашего типа 2^B  - 1 (для unit4 равное 15)
-      M{(B == 64) ? ~0uz : (1uz << B) - 1uz}, count_elements(B_ + 1uz, 0uz) {
-
-  stack.reserve(length_);
+      M{(B == sizeof(elem_t) * elem_t(8)) ? ~elem_t(0)
+                                          : (elem_t(1) << B) - elem_t(1)},
+      stacks(new Node *[B_ + elem_t(1)]) {
+  for (elem_t id = 0; id < B + elem_t(1); ++id) {
+    stacks[id] = nullptr;
+  }
 }
 
-size_t Stack::calculate_block_id(size_t value) {
+Stack::~Stack() {
+  for (elem_t id = 0; id <= block_id; ++id) {
+    while ((stacks[id] != nullptr)) {
+      Node *temp = stacks[id]; // stacks[id] -- это top для stack с id = i.
+      stacks[id] = stacks[id]->next;
+      delete temp;
+    }
+  }
+  delete[] stacks;
+}
+
+elem_t Stack::calculate_block_id(elem_t value) {
   // Вычисляем какому из блоково принадлежит число value:
   if (value == M) {
     // Максимальное число мы обрабатываем отдельно
@@ -25,43 +39,50 @@ size_t Stack::calculate_block_id(size_t value) {
   }
 }
 
-void Stack::push(size_t value) {
+bool Stack::is_empty(elem_t id) const { return (stacks[id] == nullptr); }
+
+bool Stack::is_all_empty() const {
+  return ((block_id == 0) && (stacks[0] == nullptr));
+}
+
+elem_t Stack::max() const { return max_value; }
+
+void Stack::push(elem_t value) {
   if (value <= max_value) {
     // В данном случае ни max_value, ни block_id не изменятся.
-    // Увеличиваем количество элементов для блока, которому принадлежит
-    // max_value.
-    count_elements[block_id] += 1;
-    stack.push_back(value);
+    stacks[block_id] = new Node(value, stacks[block_id]);
   } else {
     // value > max_value, поэтому потребуется обновление max_value и возможно
     // block_id.
-    size_t new_max_value = value;
-    size_t new_block_id = calculate_block_id(new_max_value);
+    elem_t new_max_value = value;
+    elem_t new_block_id = calculate_block_id(new_max_value);
     if (new_block_id == block_id) {
-      // Выполняем стандартное добавление, поскольку гарантировано не будет
-      // переполнения.
-      stack.push_back(2 * value - max_value);
+      // Выполняем стандартное добавление (по формуле 2*value - max_value),
+      // поскольку гарантировано не будет переполнения.
+      stacks[block_id] =
+          new Node(((value - max_value) + value), stacks[block_id]);
     } else {
-      // Мы добавляем элемент из другого блока сохраняем старый max, как
-      // элемент стека, чтобы при pop востановить его.
-      stack.push_back(max_value);
+      // Мы добавляем элемент из другого блока сохраняем старый max, как первый
+      // элемент нового блока, чтобы при pop востановить его.
+      stacks[new_block_id] = new Node(max_value, stacks[new_block_id]);
     }
-    count_elements[new_block_id] += 1;
     // Перезаписываем max_value и block_id
     max_value = new_max_value;
     block_id = new_block_id;
   }
 }
 
-size_t Stack::pop() {
-  // Вызов pop для пустого контейнера приводит к неопределенному поведению.
+elem_t Stack::pop() {
   // Мы знаем текущий max_value, его block_id и верхний элемент стека,
   // кототрый может быть: предыдущим max, истинным добавленным значением,
   // значением, для определения предыдущего max.
-  size_t element = stack.back();
-  count_elements[block_id] -= 1;
-  stack.pop_back();
-  if (count_elements[block_id] == 0) {
+  Node *last_node = stacks[block_id];
+  elem_t element = last_node->data;
+  Node *previous_node = last_node->next;
+  stacks[block_id] = previous_node;
+  delete last_node;
+
+  if (previous_node == nullptr) {
     // Мы удаляем последний элемент для данного блока, то есть element --
     // это либо прошлый max, либо если block_id = 0, то значит мы удалили
     // последний элемент всего стека.
@@ -74,7 +95,7 @@ size_t Stack::pop() {
       return element;
     } else {
       // element -- прошлый max, а возвращаемый элемент -- это текущий max.
-      size_t res = max_value;
+      elem_t res = max_value;
       max_value = element;
       block_id = calculate_block_id(element);
       return res;
@@ -88,18 +109,26 @@ size_t Stack::pop() {
       // element -- значение, которое будет использоваться, для вычисления
       // прошлого max_value, а текущее max_value -- это истинное добавленное
       // значение,
-      size_t res = max_value;
-      max_value = 2 * max_value - element;
+      elem_t res = max_value;
+      // востановим прошлый максимум по формуле 2 * max_value - element;
+      // Чтобы не было переполнения в промежуточных шагах:
+      elem_t diff = element - max_value;
+      // последнее корректно, так как в случае element > max_value
+
+      // (max_value - diff =  max_value - (element - max_value) = 2*max_value -
+      // element)
+      max_value = max_value - diff;
       return res;
     }
   }
 }
 
-// Возвращает истинное значение добавленного элемента
-size_t Stack::back() {
-  // Вызов back для пустого контейнера вызывает неопределенное поведение.
-  size_t element = stack.back();
-  if (count_elements[block_id] == 1) {
+elem_t Stack::back() const {
+  Node *last_node = stacks[block_id];
+  elem_t element = last_node->data;
+  Node *previous_node = last_node->next;
+
+  if (previous_node == nullptr) {
     // Если в блоке всего одно число, значит текущий max_value
     // и есть последний элемент в массиве
     return max_value;
@@ -116,21 +145,3 @@ size_t Stack::back() {
     }
   }
 }
-
-// Возвращает значение последнего элемента в стеке, которое может быть
-// закодировано.
-size_t Stack::top() {
-  // Вызов back для пустого контейнера вызывает неопределенное поведение.
-  return stack.back();
-}
-
-size_t Stack::max() {
-  // Вызов max для пустого контейнера возвращает 0.
-  // Но не стоит этого делать!
-  return max_value;
-}
-
-size_t Stack::size() { return stack.size(); }
-size_t Stack::capacity() { return stack.capacity(); }
-
-bool Stack::is_empty() { return stack.empty(); }

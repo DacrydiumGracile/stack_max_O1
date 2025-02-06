@@ -9,7 +9,7 @@ target_sources(benchmark_1
 target_link_libraries(benchmark_1
     PRIVATE
     benchmark::benchmark
-    ${solver}
+    solver_1
     standard_solution
 )
 # Push последовательных чисел
@@ -21,7 +21,7 @@ target_sources(benchmark_2
 target_link_libraries(benchmark_2
     PRIVATE
     benchmark::benchmark
-    ${solver}
+    solver_1
     standard_solution
 )
 # Pop back
@@ -33,6 +33,6 @@ target_sources(benchmark_3
 target_link_libraries(benchmark_3
     PRIVATE
     benchmark::benchmark
-    ${solver}
+    solver_1
     standard_solution
 )

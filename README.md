@@ -2,12 +2,9 @@
 
 ### Различные части проекта
 
-1. [Поиск решения и математические выкладки](doc/info.md)
-2. [Ряд пояснений по коду](doc/code.md)
-    - файл с реализацией [solvers/solver_1/solution.cpp](solvers/solver_1/solution.cpp)
-3. [Описание процедуры проверки корректности](doc/tests.md)
-    - [tests/user_tests.cpp](tests/user_tests.cpp)
-4. [Дополнительная информация о benchmarks](doc/benchmarks.md)
+1. [Поиск решения и математические выкладки](doc/latex/main.pdf)
+    - файл с основной реализацией [solvers/solver_3/solution.cpp](solvers/solver_3/solution.cpp)
+2. [Описание процедуры проверки корректности](doc/tests.md)
 
 ### Сборба проекта
 
@@ -18,11 +15,11 @@ $ cmake -S . -B ./build -DCMAKE_BUILD_TYPE=Release
 $ cmake --build ./build
 ```
 
-Запуск тестов
+Запуск тестов, например:
 ```bash
-$ ctest -V --test-dir ./build/tests/
+$ ctest -V --test-dir ./build/solver_3/tests/
 или
-$ ./build/tests/user_test
+$ ./build/solver_3/tests/user_test
 ```
 
 Запуск замеров
@@ -35,5 +32,7 @@ $ ./build/benchmarks/benchmark_3 --benchmark_enable_random_interleaving=true --b
 ```
 или
 ```bash
-$ ./run_benchmark.sh
+$ ./run_solver1_benchmark.sh
 ```
+
+Также смотреть `./run_valgrind.sh` для запуска `massif` и `ms_print`.
