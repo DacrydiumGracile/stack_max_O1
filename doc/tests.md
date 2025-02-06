@@ -104,8 +104,8 @@ options:
                    относительно данного скрипта.
 ```
 Например:
-```txt
-$ python ./validate_test_data.py -f ./tests/data/example_1.dat 
+```bash
+$ python ./validate_test_data.py -f ./src/tests_data/example_1.dat 
 INFO: Тестовые данные файла '.../tests/data/example_1.dat' корректны.
 ```
 Для генерации различных тестовых данных следует использовать `generate_data.py`:
@@ -126,7 +126,7 @@ options:
 ```
 Например, мы хотим сгенерировать данные для `uint4`, а именно, пусть в стек кладётся `20` произвольных чисел, а затем все $20$ чисел извлекаются, и так повторяется $50000$ раз. После каждого добавления и после каждого извлечения (то есть $20\cdot50000$ раз) проверяется максимальные элеменет и извлечённый элемент. Тога мы генерируем данные следующим образом:
 ```bash
-$ python ./generate_data.py -o ./tests/data/test_7.dat -n 50000 -s 20 -B 4
+$ python ./generate_data.py -o ./src/tests_data/test_7.dat -n 50000 -s 20 -B 4
 ```
 при этом в `./tests/data/test_7.dat` будет:
 ```

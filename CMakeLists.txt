@@ -12,7 +12,7 @@ set(CMAKE_THREAD_LIBS_INIT "-lpthread")
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Wextra")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g3 -Wall -Wextra")
 
   set(SANITIZERS_COMMON
     -fsanitize=address
@@ -34,19 +34,16 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
   endif()
 elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -Wall -Wextra")
+elseif (CMAKE_BUILD_TYPE STREQUAL "Valgrind")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -O0 -g3 -Wall -Wextra")
 endif()
-# message(STATUS "CMAKE_CXX_FLAGS = '${SANITIZERS_COMMON}'")
+message(STATUS "CMAKE_CXX_FLAGS = '${CMAKE_CXX_FLAGS}'")
 
-# example library
-add_subdirectory(solvers)
+set(solver solver_2 CACHE STRING "")
+message(STATUS "solver = ${solver}")
 
 option(ENABLE_UNIT_TESTS "Enable unit tests" ON)
 message(STATUS "Enable testing: ${ENABLE_UNIT_TESTS}")
 
-set(solver solver_1)
-message(STATUS "solver = ${solver}")
 
-add_subdirectory(tests)
-add_subdirectory(benchmarks)
-
-# add_executable(main main.cpp)
+add_subdirectory(src)

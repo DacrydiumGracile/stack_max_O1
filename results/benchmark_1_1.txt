@@ -1,5 +1,5 @@
 2025-01-30T22:49:16+03:00
-Running ./build/benchmarks/benchmark_1
+Running ./build/src/solver_1/benchmarks/benchmarks/benchmark_1
 Run on (12 X 3000 MHz CPU s)
 CPU Caches:
   L1 Data 32 KiB (x6)
