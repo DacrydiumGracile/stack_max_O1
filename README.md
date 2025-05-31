@@ -3,7 +3,7 @@
 ### Различные части проекта
 
 1. [Поиск решения и математические выкладки](doc/latex/main.pdf)
-    - файл с основной реализацией [solvers/solver_3/solution.cpp](solvers/solver_3/solution.cpp)
+    - файл с основной реализацией [solvers/solver_3/solution.cpp](src/solver_3/solution.cpp)
 2. [Описание процедуры проверки корректности](doc/tests.md)
 
 ### Сборба проекта
